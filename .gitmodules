@@ -1,0 +1,3 @@
+[submodule "plugins/cookietime"]
+	path = plugins/cookietime
+	url=https://github.com/hyperconnect/cookietime.git
