@@ -44,7 +44,7 @@ confdir = $(sysconfdir)/janus
 conf_DATA = conf/janus.cfg.sample
 
 certdir = $(datadir)/janus/certs
-cert_DATA = certs/mycert.key certs/mycert.pem
+cert_files = certs/mycert.key certs/mycert.pem
 
 plugindir = $(libdir)/janus/plugins
 plugin_LTLIBRARIES = $(NULL)
@@ -551,7 +551,8 @@ endif
 configs:
 	$(MKDIR_P) $(DESTDIR)$(confdir)
 	$(foreach config,$(conf_DATA),cp "$(CURDIR)/$(config)" "$(DESTDIR)$(confdir)/$(notdir $(basename $(config) .sample))";)
-
+	$(MKDIR_P) $(DESTDIR)$(certdir)
+	$(foreach cert,$(cert_files),cp "$(CURDIR)/$(cert)" "$(DESTDIR)$(certdir)/$(notdir $(cert))";)
 ##
 # Extra cleanup
 ##
