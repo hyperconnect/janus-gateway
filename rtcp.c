@@ -960,10 +960,12 @@ int janus_rtcp_sdes_cname(char *packet, int len, const char *cname, int cnamelen
 	rtcp->version = 2;
 	rtcp->type = RTCP_SDES;
 	rtcp->rc = 1;
-	int plen = 8;	/* Header + chunk + item header */
-	plen += cnamelen+2;
-	if((cnamelen+2)%4)	/* Account for padding */
-		plen += 4;
+	int plen = 8;	/* Header(4) + ssrc(4) */
+	/* https://www4.cs.fau.de/Projects/JRTP/pmt/node86.html
+	 * item header(2) + cname + terminated octet(1) + padding(3)
+	 * bitwise and(&) for 32bit boundary(assume total length is shorter than 255)
+	 */
+	plen = (plen+cnamelen+6)&0xFC;
 	if(len < plen) {
 		JANUS_LOG(LOG_ERR, "Buffer too small for SDES message: %d < %d\n", len, plen);
 		return -1;

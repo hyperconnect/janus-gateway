@@ -3303,7 +3303,7 @@ void *janus_ice_send_thread(void *data) {
 			if(stream && stream->component && stream->component->out_stats.audio.packets > 0) {
 				/* Create a SR/SDES compound */
 				int srlen = 28;
-				int sdeslen = 20;
+				int sdeslen = 24;
 				char rtcpbuf[srlen+sdeslen];
 				memset(rtcpbuf, 0, sizeof(rtcpbuf));
 				rtcp_sr *sr = (rtcp_sr *)&rtcpbuf;
@@ -3356,7 +3356,7 @@ void *janus_ice_send_thread(void *data) {
 			if(stream && stream->component && stream->component->out_stats.video[0].packets > 0) {
 				/* Create a SR/SDES compound */
 				int srlen = 28;
-				int sdeslen = 20;
+				int sdeslen = 24;
 				char rtcpbuf[srlen+sdeslen];
 				memset(rtcpbuf, 0, sizeof(rtcpbuf));
 				rtcp_sr *sr = (rtcp_sr *)&rtcpbuf;
