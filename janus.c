@@ -470,6 +470,27 @@ static gboolean janus_check_sessions(gpointer user_data) {
 					((g_atomic_int_get(&session->transport_gone) && now - session->last_activity >= (gint64)reclaim_session_timeout * G_USEC_PER_SEC) &&
 							!g_atomic_int_compare_and_exchange(&session->timeout, 0, 1))) {
 				JANUS_LOG(LOG_INFO, "Timeout expired for session %"SCNu64"...\n", session->session_id);
+
+				/* Call plugins' hangup before clear to notify event */
+				janus_mutex_lock(&session->mutex);
+				if(session->ice_handles != NULL && g_hash_table_size(session->ice_handles) > 0) {
+					GHashTableIter iter;
+					gpointer value;
+					/* Remove all handles */
+					g_hash_table_iter_init(&iter, session->ice_handles);
+					while (g_hash_table_iter_next(&iter, NULL, &value)) {
+						janus_ice_handle *handle = value;
+						if(!handle)
+							continue;
+
+						janus_plugin *plugin_t = (janus_plugin *)handle->app;
+						if (plugin_t && plugin_t->hangup_media) {
+							plugin_t->hangup_media(handle->app_handle);
+						}
+					}
+				}
+				janus_mutex_unlock(&session->mutex);
+
 				/* Mark the session as over, we'll deal with it later */
 				janus_session_handles_clear(session);
 				/* Notify the transport */
